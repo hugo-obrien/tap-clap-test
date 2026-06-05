@@ -1,0 +1,2 @@
+# images and textures
+*.png filter=lfs diff=lfs merge=lfs -text
