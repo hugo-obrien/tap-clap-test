@@ -413,9 +413,11 @@
       "__id__": 2
     },
     "_enabled": true,
-    "gridWidth": 10,
-    "gridHeight": 10,
+    "gridWidth": 9,
+    "gridHeight": 9,
     "tileSize": 40,
+    "spacing": 2,
+    "minBlastGroupSize": 3,
     "tileBlueprints": [
       {
         "__id__": 11

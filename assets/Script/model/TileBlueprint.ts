@@ -12,4 +12,8 @@ export class TileBlueprint {
 
     @property({type: cc.SpriteFrame, tooltip: "Sprite"})
     spriteFrame: cc.SpriteFrame = null;
+
+    public toString(): string {
+        return `${this.id} - ${this.type}`;
+    }
 }

@@ -11,4 +11,8 @@ export class Tile {
         this.row = row;
         this.col = col;
     }
+
+    public getKey(): string {
+        return `${this.row},${this.col}`;
+    }
 }
