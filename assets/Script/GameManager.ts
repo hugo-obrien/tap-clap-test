@@ -5,6 +5,7 @@ import {TileBlueprint} from "./model/TileBlueprint";
 import {Tile} from "./model/Tile";
 import {TileType} from "./enums/TileType";
 import {BoardView} from "./views/BoardView";
+import {Events} from "./enums/Events";
 
 @ccclass
 export default class GameManager extends cc.Component {
@@ -31,12 +32,19 @@ export default class GameManager extends cc.Component {
     @property({type: cc.Integer, tooltip: "Background Padding"})
     backgroundPadding: number = 20;
 
+    @property({type: cc.Integer, tooltip: "Max turns"})
+    maxTurnsCount = 20;
+    @property({type: cc.Integer, tooltip: "Score need"})
+    scoreNeedToWin = 500;
+
     private grid: Grid | null = null;
     private boardView: BoardView | null = null;
 
     private gridStartPosition: cc.Vec2 = cc.v2(0, 0);
 
     private isProcessing: boolean = false;
+    private turnsCount = 0;
+    private scoreCount = 0;
 
     protected start() {
         this.validateBlueprints();
@@ -74,6 +82,8 @@ export default class GameManager extends cc.Component {
     private startNewGame() {
         this.grid = new Grid(this.gridWidth, this.gridHeight, this.tileBlueprints);
         this.renderInitialGrid();
+        this.turnsCount = 0;
+        this.updateMoves();
     }
 
     private renderInitialGrid() {
@@ -97,6 +107,9 @@ export default class GameManager extends cc.Component {
             //ignoring
             return;
         }
+
+        this.turnsCount++;
+        this.updateMoves();
 
         switch (tile.blueprint.type) {
             case TileType.COMMON: {
@@ -134,5 +147,14 @@ export default class GameManager extends cc.Component {
             this.boardView.getContainerHeight(),
             this.onTileClicked.bind(this),
             () => this.isProcessing = false);
+    }
+
+    private updateMoves() {
+        const turnsLeft = this.maxTurnsCount - this.turnsCount;
+        this.node.emit(Events.MOVES_UPDATED, {
+            currentScore: this.scoreCount,
+            scoreNeeded: this.scoreNeedToWin,
+            turnsLeft: turnsLeft
+        });
     }
 }
