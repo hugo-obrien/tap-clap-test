@@ -1,6 +1,6 @@
 import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
-import {TileType} from "../enums/TileType";
+import {TileType} from "./enums/TileType";
 
 @ccclass('TileBlueprint')
 export class TileBlueprint {

@@ -1,6 +1,6 @@
 import ccclass = cc._decorator.ccclass;
 import {Tile} from "../Tile";
-import {Events} from "../../enums/Events";
+import {Events} from "../enums/Events";
 
 @ccclass
 export default class TileControllerComponent extends cc.Component {

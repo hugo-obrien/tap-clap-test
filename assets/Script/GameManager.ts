@@ -3,9 +3,9 @@ import property = cc._decorator.property;
 import {Grid} from "./model/Grid";
 import {TileBlueprint} from "./model/TileBlueprint";
 import {Tile} from "./model/Tile";
-import {TileType} from "./enums/TileType";
 import {BoardView} from "./views/BoardView";
-import {Events} from "./enums/Events";
+import {Events} from "./model/enums/Events";
+import {IBehaviorContext, TileBehaviorRegistry} from "./behaviors/IBehavior";
 
 @ccclass
 export default class GameManager extends cc.Component {
@@ -46,6 +46,8 @@ export default class GameManager extends cc.Component {
     private turnsCount = 0;
     private scoreCount = 0;
 
+    private gridContext: IBehaviorContext;
+
     protected start() {
         this.validateBlueprints();
         this.initializeBoard();
@@ -77,6 +79,12 @@ export default class GameManager extends cc.Component {
     private initializeBoard() {
         this.boardView = new BoardView(this.tileSize, this.spacing, this.backgroundPadding, this.backgroundInset);
         this.gridStartPosition = this.boardView.setup(this.backgroundFrame, this.gridWidth, this.gridHeight);
+
+        this.gridContext = {
+            getTile: (r, c) => this.grid!.getTile(r, c),
+            getNeighbors: (t) => this.grid!.getNeighbors(t),
+            getMinBlastGroupSize: () => this.minBlastGroupSize
+        };
     }
 
     private startNewGame() {
@@ -100,37 +108,28 @@ export default class GameManager extends cc.Component {
     }
 
     private onTileClicked(tile: Tile) {
-        if (!this.grid) {
-            cc.error(`GameManager.onTileClicked(): Grid is null`);
-            return;
-        } else if (this.isProcessing) {
+        if (this.isProcessing) {
             //ignoring
             return;
+        } else if (!this.grid || !this.boardView) {
+            cc.error(`GameManager.onTileClicked(): Grid or BoardView is null`);
+            return;
         }
 
-        this.turnsCount++;
-        this.updateMoves();
-
-        switch (tile.blueprint.type) {
-            case TileType.COMMON: {
-                this.handleCommonTileBlast(tile);
-                return;
-            }
-            default:
-                cc.warn(`GameManager.onTileClicked(): ${tile.blueprint.type} is not supported yet`);
+        const behavior = TileBehaviorRegistry.get(tile.blueprint.type);
+        if (!behavior) {
+            cc.warn(`GameManager.onTileClicked(): ${tile.blueprint.type} is not supported yet`);
+            return;
         }
-    }
 
-    private handleCommonTileBlast(tile: Tile) {
-        cc.log('GameManager.handleCommonTileBlast()');
-        const groupToBlast = this.grid.findConnectedGroup(tile);
-
-        if (groupToBlast.length >= this.minBlastGroupSize) {
+        const result = behavior.execute(tile, this.gridContext);
+        if (result.isSuccessful && result.affectedTiles.length > 0) {
             this.isProcessing = true;
-            this.grid!.removeTiles(groupToBlast);
-            this.boardView!.animateBlast(groupToBlast, () => this.processPostBlastSequence());
+            this.grid.removeTiles(result.affectedTiles);
+            this.boardView.animateBlast(result.affectedTiles, () => this.processPostBlastSequence());
+            this.scoreCount += this.calcScore(result.affectedTiles.length);
         } else {
-            this.boardView!.shakeTile(tile);
+            this.boardView.shakeTile(tile);
         }
     }
 
@@ -147,6 +146,9 @@ export default class GameManager extends cc.Component {
             this.boardView.getContainerHeight(),
             this.onTileClicked.bind(this),
             () => this.isProcessing = false);
+
+        this.turnsCount++;
+        this.updateMoves();
     }
 
     private updateMoves() {
@@ -156,5 +158,9 @@ export default class GameManager extends cc.Component {
             scoreNeeded: this.scoreNeedToWin,
             turnsLeft: turnsLeft
         });
+    }
+
+    private calcScore(n: number) {
+        return n * (n + 1) / 2;
     }
 }

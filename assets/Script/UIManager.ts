@@ -1,6 +1,6 @@
 import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
-import {Events, TurnFinishedPayload} from "./enums/Events";
+import {Events, TurnFinishedPayload} from "./model/enums/Events";
 
 @ccclass
 export default class UIManager extends cc.Component {

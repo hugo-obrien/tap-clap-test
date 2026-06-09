@@ -24,7 +24,21 @@ export class Grid {
         return null;
     }
 
-    public findConnectedGroup(startTile: Tile): Tile[] {
+    public getNeighbors(tile: Tile): Tile[] {
+        const neighbors: Tile[] = [];
+
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [dr, dc] of directions) {
+            const neighbor = this.getTile(tile.row + dr, tile.col + dc);
+            if (neighbor) {
+                neighbors.push(neighbor);
+            }
+        }
+
+        return neighbors;
+    }
+
+    /*public findConnectedGroup(startTile: Tile): Tile[] {
         const group: Tile[] = [];
         const visited = new Set<string>();
         const queue: Tile[] = [startTile];
@@ -49,7 +63,7 @@ export class Grid {
             cc.log(item.toString());
         }
         return group;
-    }
+    }*/
 
     public removeTiles(tilesToRemove: Tile[]) {
         for (const tile of tilesToRemove) {
@@ -103,7 +117,7 @@ export class Grid {
         return newTiles;
     }
 
-    private getValidNeighbors(row: number, col: number): Tile[] {
+    /*private getValidNeighbors(row: number, col: number): Tile[] {
         const neighbors: Tile[] = [];
         const directions = [
             [-1, 0],
@@ -122,7 +136,7 @@ export class Grid {
         }
 
         return neighbors;
-    }
+    }*/
 
     private initialize() {
         console.log('Begin initialize')

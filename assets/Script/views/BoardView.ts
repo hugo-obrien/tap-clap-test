@@ -1,7 +1,6 @@
 import {Tile} from "../model/Tile";
 import TileControllerComponent from "../model/components/TileControllerComponent";
-import {Events} from "../enums/Events";
-
+import {Events} from "../model/enums/Events";
 
 export class BoardView {
     private gridContainer: cc.Node | null = null;
