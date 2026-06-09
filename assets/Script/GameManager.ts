@@ -48,6 +48,8 @@ export default class GameManager extends cc.Component {
 
     private gridContext: IBehaviorContext;
 
+    private isGameOver: boolean = false;
+
     protected start() {
         this.validateBlueprints();
         this.initializeBoard();
@@ -135,6 +137,10 @@ export default class GameManager extends cc.Component {
         } else {
             this.boardView.shakeTile(tile);
         }
+
+        if (this.scoreCount >= this.scoreNeedToWin) {
+            this.win();
+        }
     }
 
     private processPostBlastSequence() {
@@ -153,6 +159,9 @@ export default class GameManager extends cc.Component {
 
         this.turnsCount++;
         this.updateMoves();
+        if (this.turnsCount >= this.maxTurnsCount) {
+            this.lose();
+        }
     }
 
     private updateMoves() {
@@ -166,5 +175,19 @@ export default class GameManager extends cc.Component {
 
     private calcScore(n: number) {
         return n * (n + 1) / 2;
+    }
+
+    private win() {
+        if (this.isGameOver) return;
+        this.isGameOver = true;
+        this.isProcessing = true;
+        this.node.emit(Events.GAME_OVER, {isWin: true});
+    }
+
+    private lose() {
+        if (this.isGameOver) return;
+        this.isGameOver = true;
+        this.isProcessing = true;
+        this.node.emit(Events.GAME_OVER, {isWin: false});
     }
 }

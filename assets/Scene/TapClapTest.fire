@@ -97,7 +97,7 @@
         "__id__": 33
       },
       {
-        "__id__": 37
+        "__id__": 38
       }
     ],
     "_prefab": null,
@@ -1449,6 +1449,9 @@
       },
       {
         "__id__": 36
+      },
+      {
+        "__id__": 37
       }
     ],
     "backgroundFrame": {
@@ -1457,7 +1460,7 @@
     "backgroundInset": 70,
     "backgroundPadding": 50,
     "maxTurnsCount": 20,
-    "scoreNeedToWin": 500,
+    "scoreNeedToWin": 400,
     "_id": "71N6d9yohAY4E1mDo+qm4e"
   },
   {
@@ -1482,6 +1485,14 @@
     "type": 0,
     "spriteFrame": {
       "__uuid__": "1eb95b90-039b-4ad2-9bfe-a4e9f7c07a29"
+    }
+  },
+  {
+    "__type__": "TileBlueprint",
+    "id": "tile_common_purple",
+    "type": 0,
+    "spriteFrame": {
+      "__uuid__": "70dea49a-68ed-41a9-912e-c480ab762dd0"
     }
   },
   {
