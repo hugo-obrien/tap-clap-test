@@ -127,7 +127,11 @@ export default class GameManager extends cc.Component {
             this.isProcessing = true;
             this.grid.removeTiles(result.affectedTiles);
             this.boardView.animateBlast(result.affectedTiles, () => this.processPostBlastSequence());
-            this.scoreCount += this.calcScore(result.affectedTiles.length);
+
+            let scoreCount = this.calcScore(result.affectedTiles.length);
+            this.scoreCount += scoreCount;
+
+            this.node.emit(Events.FLYING_SCORE, {tile: tile.node, score: scoreCount});
         } else {
             this.boardView.shakeTile(tile);
         }
