@@ -98,8 +98,8 @@ export default class UIManager extends cc.Component {
         messageContainer.addChild(bgNode);
         const graphics = bgNode.addComponent(cc.Graphics);
 
-        const bgWidth = 450;
-        const bgHeight = 150;
+        const bgWidth = 300;
+        const bgHeight = 120;
         bgNode.width = bgWidth;
         bgNode.height = bgHeight;
 
@@ -121,20 +121,20 @@ export default class UIManager extends cc.Component {
 
         const gameOverLabel = textNode.addComponent(cc.Label);
         gameOverLabel.string = payload.isWin ? 'WIN' : 'LOOSE';
-        gameOverLabel.fontSize = 90;
-        gameOverLabel.lineHeight = 90;
+        gameOverLabel.fontSize = 75;
+        gameOverLabel.lineHeight = 75;
         gameOverLabel.node.color = cc.Color.WHITE;
 
         let labelOutline = gameOverLabel.addComponent(cc.LabelOutline);
         labelOutline.enabled = true;
         labelOutline.color = cc.Color.BLACK;
-        labelOutline.width = 6;
+        labelOutline.width = 4;
 
         let labelShadow = gameOverLabel.addComponent(cc.LabelShadow);
         labelShadow.enabled = true;
         labelShadow.color = new cc.Color(0, 0, 0, 150);
         labelShadow.offset = new cc.Vec2(0, -5);
-        labelShadow.blur = 10;
+        labelShadow.blur = 8;
 
         const hintNode = new cc.Node('Hint');
         overlay.addChild(hintNode);
@@ -177,7 +177,7 @@ export default class UIManager extends cc.Component {
 
         const label = shuffleNode.addComponent(cc.Label);
         label.string = "Everyday I'm shuffling";
-        label.fontSize = 56;
+        label.fontSize = 48;
         label.node.color = new cc.Color(255, 215, 0);
 
         const outline = label.addComponent(cc.LabelOutline);
