@@ -70,7 +70,14 @@ export default class UIManager extends cc.Component {
 
         const overlay = new cc.Node('GameOverOverlay');
         overlay.addComponent(cc.BlockInputEvents);
-        overlay.color = new cc.Color(0, 0, 0, 180);
+
+        const overlayGraphics = overlay.addComponent(cc.Graphics);
+        overlayGraphics.fillColor = new cc.Color(0, 0, 0, 210);
+
+        const canvasSize = canvas.getContentSize();
+        overlayGraphics.rect(-canvasSize.width / 2, -canvasSize.height / 2, canvasSize.width, canvasSize.height);
+        overlayGraphics.fill();
+        canvas.addChild(overlay);
 
         const widget = overlay.addComponent(cc.Widget);
         widget.isAlignTop = true;
@@ -82,39 +89,73 @@ export default class UIManager extends cc.Component {
         widget.left = 0;
         widget.right = 0;
 
-        canvas.addChild(overlay);
+        const messageContainer = new cc.Node('MessageContainer');
+        overlay.addChild(messageContainer);
 
-        const messageNode = new cc.Node('GameOverMessage');
-        overlay.addChild(messageNode);
+        const bgNode = new cc.Node('Background');
+        messageContainer.addChild(bgNode);
+        const graphics = bgNode.addComponent(cc.Graphics);
 
-        const gameOverLabel = messageNode.addComponent(cc.Label);
+        const bgWidth = 450;
+        const bgHeight = 150;
+        bgNode.width = bgWidth;
+        bgNode.height = bgHeight;
+
+        const isWin = payload.isWin;
+        const fillColor = isWin ? new cc.Color(40, 80, 40, 255) : new cc.Color(80, 40, 40, 255);
+        const strokeColor = isWin ? new cc.Color(100, 255, 100, 255) : new cc.Color(255, 100, 100, 255);
+
+        graphics.fillColor = fillColor;
+        graphics.strokeColor = strokeColor;
+        graphics.lineWidth = 6;
+
+        graphics.roundRect(-bgWidth / 2, -bgHeight / 2, bgWidth, bgHeight, 25);
+        graphics.fill();
+        graphics.stroke();
+
+        const textNode = new cc.Node('Text');
+        textNode.y = -10;
+        messageContainer.addChild(textNode);
+
+        const gameOverLabel = textNode.addComponent(cc.Label);
         gameOverLabel.string = payload.isWin ? 'WIN' : 'LOOSE';
-        gameOverLabel.fontSize = 72;
-        gameOverLabel.lineHeight = 72;
-        gameOverLabel.node.color = payload.isWin ? new cc.Color(100, 255, 100) : new cc.Color(255, 100, 100);
+        gameOverLabel.fontSize = 90;
+        gameOverLabel.lineHeight = 90;
+        gameOverLabel.node.color = cc.Color.WHITE;
+
+        let labelOutline = gameOverLabel.addComponent(cc.LabelOutline);
+        labelOutline.enabled = true;
+        labelOutline.color = cc.Color.BLACK;
+        labelOutline.width = 6;
+
+        let labelShadow = gameOverLabel.addComponent(cc.LabelShadow);
+        labelShadow.enabled = true;
+        labelShadow.color = new cc.Color(0, 0, 0, 150);
+        labelShadow.offset = new cc.Vec2(0, -5);
+        labelShadow.blur = 10;
 
         const hintNode = new cc.Node('Hint');
         overlay.addChild(hintNode);
 
-        hintNode.y = -80;
+        hintNode.y = -140;
         const hintLabel = hintNode.addComponent(cc.Label);
         hintLabel.string = 'Press anywhere to restart';
         hintLabel.fontSize = 24;
         hintLabel.node.color = cc.Color.WHITE;
 
-        messageNode.scale = 0;
-        messageNode.opacity = 0;
+        messageContainer.scale = 0;
+        messageContainer.opacity = 0;
 
-        cc.tween(messageNode)
+        cc.tween(messageContainer)
             .to(0.1, {opacity: 255})
-            .to(0.6, {scale: 1.2}, {easing: 'backOut'})
-            .to(0.2, {scale: 1.0}, {easing: 'bounceOut'})
+            .to(0.5, {scale: 1.15}, {easing: 'sineOut'})
+            .to(0.25, {scale: 1.0}, {easing: 'sineIn'})
             .start();
 
         hintNode.opacity = 0;
         cc.tween(hintNode)
             .delay(0.5)
-            .to(0.4, { opacity: 255 })
+            .to(0.4, {opacity: 255})
             .start();
 
         overlay.on(cc.Node.EventType.TOUCH_END, () => {

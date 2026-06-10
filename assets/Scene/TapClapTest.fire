@@ -1459,7 +1459,7 @@
     },
     "backgroundInset": 70,
     "backgroundPadding": 50,
-    "maxTurnsCount": 20,
+    "maxTurnsCount": 30,
     "scoreNeedToWin": 400,
     "_id": "71N6d9yohAY4E1mDo+qm4e"
   },
