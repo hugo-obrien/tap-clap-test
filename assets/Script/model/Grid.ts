@@ -1,6 +1,6 @@
 import {Tile} from "./Tile";
 import {TileBlueprint} from "./TileBlueprint";
-import TiledTile = cc.TiledTile;
+import {Utils} from "../utils/Utils";
 
 export class Grid {
     public width: number;
@@ -38,32 +38,6 @@ export class Grid {
         return neighbors;
     }
 
-    /*public findConnectedGroup(startTile: Tile): Tile[] {
-        const group: Tile[] = [];
-        const visited = new Set<string>();
-        const queue: Tile[] = [startTile];
-        const targetId = startTile.blueprint.id;
-
-        while (queue.length > 0) {
-            const current = queue.shift()!;
-            group.push(current);
-            visited.add(current.getKey());
-
-            const neighbors = this.getValidNeighbors(current.row, current.col);
-            for (const neighbor of neighbors) {
-                const key = neighbor.getKey();
-                if (!visited.has(key) && neighbor.blueprint.id === targetId) {
-                    visited.add(key);
-                    queue.push(neighbor);
-                }
-            }
-        }
-
-        for (const item of group) {
-            cc.log(item.toString());
-        }
-        return group;
-    }*/
 
     public removeTiles(tilesToRemove: Tile[]) {
         for (const tile of tilesToRemove) {
@@ -117,28 +91,79 @@ export class Grid {
         return newTiles;
     }
 
-    /*private getValidNeighbors(row: number, col: number): Tile[] {
-        const neighbors: Tile[] = [];
-        const directions = [
-            [-1, 0],
-            [1, 0],
-            [0, -1],
-            [0, 1]
-        ];
+    public getGroup(tile: Tile): Tile[] {
+        const group: Tile[] = [];
+        const visited = new Set<string>();
+        const queue: Tile[] = [tile];
+        const targetId = tile.blueprint.id;
 
-        for (const [rowDirection, colDirection] of directions) {
-            const targetRow = row + rowDirection;
-            const targetCol = col + colDirection;
-            const targetTile = this.getTile(targetRow, targetCol);
-            if (targetTile) {
-                neighbors.push(targetTile);
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+            group.push(current);
+            visited.add(current.key);
+
+            const neighbors = this.getNeighbors(current);
+            for (const neighbor of neighbors) {
+                const key = neighbor.key;
+                if (!visited.has(key) && neighbor.blueprint.id === targetId) {
+                    visited.add(key);
+                    queue.push(neighbor);
+                }
             }
         }
 
-        return neighbors;
-    }*/
+        return group;
+    }
+
+    public haveExistingTurns(minBlastGroupSize: number): boolean {
+        const checked = new Set<string>;
+        for (let c = 0; c < this.width; c++) {
+            for (let r = 0; r < this.height; r++) {
+                let tile = this.getTile(r, c);
+                if (!tile) {
+                    cc.warn(`GameManager.checkExistingTurns(). Tile ${r}:${c} is null`);
+                    continue;
+                } else if (checked.has(tile.key)) {
+                    // ignoring
+                    continue;
+                }
+
+                let group = this.getGroup(tile);
+                if (group.length >= minBlastGroupSize) {
+                    return true;
+                }
+                group.forEach(tile => checked.add(tile.key));
+            }
+        }
+
+        return false;
+    }
+
+    public shuffle(minBlastGroupSize: number): Tile[] {
+        // todo Add protection when the grid is small and there are many types of tiles
+        const shuffled: Tile[] = [];
+        for (let c = 0; c < this.width; c++) {
+            for (let r = 0; r < this.height; r++) {
+                const tile = this.tiles[r][c];
+                shuffled.push(tile);
+            }
+        }
+
+        Utils.shuffle(shuffled);
+
+        for (const tile of shuffled) {
+            this.tiles[tile.row][tile.col] = tile;
+        }
+
+        if (this.haveExistingTurns(minBlastGroupSize)) {
+            return shuffled;
+        } else {
+            return this.shuffle(minBlastGroupSize);
+        }
+    }
 
     private initialize() {
+        // todo Add protection when the grid is small and there are many types of tiles
         console.log('Begin initialize')
         if (!this.availableBlueprints || this.availableBlueprints.length == 0) {
             cc.warn('Grid.initialize() There are no available blueprints');

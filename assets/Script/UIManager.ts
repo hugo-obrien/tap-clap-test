@@ -14,12 +14,14 @@ export default class UIManager extends cc.Component {
         this.node.on(Events.MOVES_UPDATED, this.onMovesUpdated, this)
         this.node.on(Events.FLYING_SCORE, this.onFlyingScore, this);
         this.node.on(Events.GAME_OVER, this.onGameOver, this);
+        this.node.on(Events.SHUFFLE, this.onShuffle, this);
     }
 
     protected onDestroy() {
         this.node.off(Events.MOVES_UPDATED, this.onMovesUpdated, this)
         this.node.off(Events.FLYING_SCORE, this.onFlyingScore, this);
         this.node.off(Events.GAME_OVER, this.onGameOver, this);
+        this.node.off(Events.SHUFFLE, this.onShuffle, this);
     }
 
     private onMovesUpdated(payload: TurnFinishedPayload) {
@@ -164,5 +166,40 @@ export default class UIManager extends cc.Component {
                 cc.director.loadScene(currentScene.name);
             }
         });
+    }
+
+    private onShuffle() {
+        const canvas = cc.find('Canvas');
+        if (!canvas) return;
+
+        const shuffleNode = new cc.Node('ShuffleMessage');
+        canvas.addChild(shuffleNode);
+
+        const label = shuffleNode.addComponent(cc.Label);
+        label.string = "Everyday I'm shuffling";
+        label.fontSize = 56;
+        label.node.color = new cc.Color(255, 215, 0);
+
+        const outline = label.addComponent(cc.LabelOutline);
+        outline.color = cc.Color.BLACK;
+        outline.width = 5;
+
+        const shadow = label.addComponent(cc.LabelShadow);
+        shadow.color = new cc.Color(0, 0, 0, 150);
+        shadow.offset = new cc.Vec2(0, -4);
+        shadow.blur = 8;
+
+        shuffleNode.scale = 0;
+        shuffleNode.opacity = 0;
+
+        cc.tween(shuffleNode)
+            .to(0.2, { scale: 1.2, opacity: 255 }, { easing: 'backOut' })
+            .to(0.15, { angle: -8 })
+            .to(0.15, { angle: 8 })
+            .to(0.15, { angle: 0 })
+            .delay(0.5)
+            .to(0.25, { scale: 1.5, opacity: 0 }, { easing: 'sineIn' })
+            .call(() => shuffleNode.destroy())
+            .start();
     }
 }

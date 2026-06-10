@@ -10,6 +10,7 @@ export interface ITileBehavior {
 export interface IBehaviorContext {
     getTile(row: number, col: number): Tile | null;
     getNeighbors(tile: Tile): Tile[];
+    getGroup(tile: Tile): Tile[];
     getMinBlastGroupSize(): number;
 }
 

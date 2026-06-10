@@ -36,6 +36,8 @@ export default class GameManager extends cc.Component {
     maxTurnsCount = 20;
     @property({type: cc.Integer, tooltip: "Score need"})
     scoreNeedToWin = 500;
+    @property({type: cc.Integer, tooltip: "Max board shuffles"})
+    maxBoardShuffles = 3;
 
     private grid: Grid | null = null;
     private boardView: BoardView | null = null;
@@ -45,6 +47,7 @@ export default class GameManager extends cc.Component {
     private isProcessing: boolean = false;
     private turnsCount = 0;
     private scoreCount = 0;
+    private shufflesUsed = 0;
 
     private gridContext: IBehaviorContext;
 
@@ -85,6 +88,7 @@ export default class GameManager extends cc.Component {
         this.gridContext = {
             getTile: (r, c) => this.grid!.getTile(r, c),
             getNeighbors: (t) => this.grid!.getNeighbors(t),
+            getGroup: (t) => this.grid!.getGroup(t),
             getMinBlastGroupSize: () => this.minBlastGroupSize
         };
     }
@@ -140,6 +144,7 @@ export default class GameManager extends cc.Component {
 
         if (this.scoreCount >= this.scoreNeedToWin) {
             this.win();
+            return;
         }
     }
 
@@ -154,14 +159,15 @@ export default class GameManager extends cc.Component {
             newTiles,
             this.gridStartPosition,
             this.boardView.getContainerHeight(),
-            this.onTileClicked.bind(this),
-            () => this.isProcessing = false);
+            this.onTileClicked.bind(this));
 
         this.turnsCount++;
         this.updateMoves();
         if (this.turnsCount >= this.maxTurnsCount) {
             this.lose();
         }
+
+        this.scheduleOnce(this.checkExistingTurns, 0.6);
     }
 
     private updateMoves() {
@@ -189,5 +195,26 @@ export default class GameManager extends cc.Component {
         this.isGameOver = true;
         this.isProcessing = true;
         this.node.emit(Events.GAME_OVER, {isWin: false});
+    }
+
+    private checkExistingTurns() {
+        cc.log('GameManager.checkExistingTurns()');
+        if (this.grid.haveExistingTurns(this.minBlastGroupSize)) {
+            this.isProcessing = false;
+            return;
+        }
+
+        cc.log('GameManager.checkExistingTurns() there is no turns');
+        if (this.shufflesUsed >= this.maxBoardShuffles) {
+            this.lose();
+            return;
+        }
+
+        const shuffled = this.grid.shuffle(this.minBlastGroupSize);
+        this.node.emit(Events.SHUFFLE);
+        this.boardView.animateShuffle(shuffled, this.gridStartPosition, () => {
+            this.shufflesUsed++;
+            this.isProcessing = false;
+        });
     }
 }

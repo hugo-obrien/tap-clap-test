@@ -53,9 +53,7 @@ export class BoardView {
         const tileNode = new cc.Node(`Tile_${now}`);
         this.gridContainer!.addChild(tileNode);
 
-        const x = startPosition.x + tile.col * (this.tileSize + this.spacing);
-        const y = startPosition.y - tile.row * (this.tileSize + this.spacing);
-        tileNode.setPosition(x, y);
+        tileNode.setPosition(this.getPosition(tile, startPosition));
 
         const sprite = tileNode.addComponent(cc.Sprite);
         sprite.spriteFrame = tile.blueprint.spriteFrame;
@@ -118,12 +116,8 @@ export class BoardView {
     }
 
     public animateRefill(newTiles: Tile[], startPosition: cc.Vec2, containerHeight: number,
-                         onClickCallback: (tile: Tile) => void, onComplete: () => void) {
-        let completedCount = 0;
-        const total = newTiles.length;
-
-        if (total === 0) {
-            onComplete();
+                         onClickCallback: (tile: Tile) => void) {
+        if (newTiles.length === 0) {
             return;
         }
 
@@ -132,18 +126,11 @@ export class BoardView {
         for (const tile of newTiles) {
             const tileNode = this.createTileNode(tile, startPosition, onClickCallback);
 
-            const targetX = startPosition.x + tile.col * (this.tileSize + this.spacing);
-            const targetY = startPosition.y - tile.row * (this.tileSize + this.spacing);
+            const target = this.getPosition(tile, startPosition);
 
-            tileNode.setPosition(targetX, spawnY);
+            tileNode.setPosition(target.x, spawnY);
             cc.tween(tileNode)
-                .to(0.5, {y: targetY}, {easing: 'bounceOut'})
-                .call(() => {
-                    completedCount++;
-                    if (completedCount === total) {
-                        onComplete();
-                    }
-                })
+                .to(0.5, {y: target.y}, {easing: 'bounceOut'})
                 .start();
         }
     }
@@ -160,6 +147,45 @@ export class BoardView {
 
     public getContainerHeight(): number {
         return this.gridContainer ? this.gridContainer.height : 0;
+    }
+
+    public animateShuffle(shuffled: Tile[], startPosition: cc.Vec2, onComplete: () => void) {
+        let completedCount = 0;
+        for (const tile of shuffled) {
+            const current = tile.node.position;
+            const target = this.getPosition(tile, startPosition);
+            const delta = cc.v2(target.x - current.x, target.y - current.y);
+
+            const randomOffset1 = (Math.random() - 0.5) * 2 * 150;
+            const randomOffset2 = (Math.random() - 0.5) * 2 * 150;
+
+            const c1 = cc.v2(
+                current.x + delta.x * 0.33 + randomOffset1,
+                current.y + delta.y * 0.33 + randomOffset1,
+            );
+
+            const c2 = cc.v2(
+                current.x + delta.x * 0.66 + randomOffset2,
+                current.y + delta.y * 0.66 + randomOffset2,
+            );
+
+            cc.tween(tile.node)
+                .bezierTo(2, c1, c2, target)
+                .call(() => {
+                    completedCount++;
+                    if (completedCount === shuffled.length) {
+                        onComplete();
+                    }
+                })
+                .start();
+        }
+    }
+
+    private getPosition(tile: Tile, startPosition: cc.Vec2): cc.Vec2 {
+        const targetX = startPosition.x + tile.col * (this.tileSize + this.spacing);
+        const targetY = startPosition.y - tile.row * (this.tileSize + this.spacing);
+
+        return cc.v2(targetX, targetY);
     }
 
 }
