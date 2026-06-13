@@ -97,7 +97,7 @@
         "__id__": 35
       },
       {
-        "__id__": 41
+        "__id__": 44
       }
     ],
     "_prefab": null,
@@ -1533,18 +1533,28 @@
       "__id__": 2
     },
     "_enabled": true,
+    "gridSettings": {
+      "__id__": 36
+    },
+    "gameSettings": {
+      "__id__": 37
+    },
+    "backgroundSettings": {
+      "__id__": 43
+    },
+    "_id": "71N6d9yohAY4E1mDo+qm4e"
+  },
+  {
+    "__type__": "GridSettings",
     "gridWidth": 9,
     "gridHeight": 9,
-    "tileSize": 26,
-    "spacing": 1,
+    "tileSize": 33,
+    "spacing": 1
+  },
+  {
+    "__type__": "GameSettings",
     "minBlastGroupSize": 3,
     "tileBlueprints": [
-      {
-        "__id__": 36
-      },
-      {
-        "__id__": 37
-      },
       {
         "__id__": 38
       },
@@ -1553,17 +1563,17 @@
       },
       {
         "__id__": 40
+      },
+      {
+        "__id__": 41
+      },
+      {
+        "__id__": 42
       }
     ],
-    "backgroundFrame": {
-      "__id__": 10
-    },
-    "backgroundInset": 70,
-    "backgroundPadding": 50,
-    "maxTurnsCount": 30,
-    "scoreNeedToWin": 1000,
-    "maxBoardShuffles": 3,
-    "_id": "71N6d9yohAY4E1mDo+qm4e"
+    "maxTurnsCount": 20,
+    "scoreNeedToWin": 500,
+    "maxBoardShuffles": 3
   },
   {
     "__type__": "TileBlueprint",
@@ -1571,14 +1581,6 @@
     "type": 0,
     "spriteFrame": {
       "__uuid__": "eea4a1cf-3c27-41f8-bd8a-357fd53f5a99"
-    }
-  },
-  {
-    "__type__": "TileBlueprint",
-    "id": "tile_common_red",
-    "type": 0,
-    "spriteFrame": {
-      "__uuid__": "b4263007-4d4c-4a39-bcf7-8e9bbe4ac8aa"
     }
   },
   {
@@ -1599,11 +1601,27 @@
   },
   {
     "__type__": "TileBlueprint",
+    "id": "tile_common_red",
+    "type": 0,
+    "spriteFrame": {
+      "__uuid__": "b4263007-4d4c-4a39-bcf7-8e9bbe4ac8aa"
+    }
+  },
+  {
+    "__type__": "TileBlueprint",
     "id": "tile_common_yellow",
     "type": 0,
     "spriteFrame": {
       "__uuid__": "a501fb8e-9811-4df4-b20f-6b92162c79f1"
     }
+  },
+  {
+    "__type__": "BackgroundSettings",
+    "backgroundFrame": {
+      "__id__": 10
+    },
+    "backgroundInset": 70,
+    "backgroundPadding": 50
   },
   {
     "__type__": "79313rXz7lNFZ/JHR/R4CjN",

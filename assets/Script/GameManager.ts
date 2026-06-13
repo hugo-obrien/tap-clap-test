@@ -7,37 +7,50 @@ import {BoardView} from "./views/BoardView";
 import {Events} from "./model/enums/Events";
 import {IBehaviorContext, TileBehaviorRegistry} from "./behaviors/IBehavior";
 
-@ccclass
-export default class GameManager extends cc.Component {
+@ccclass('GridSettings')
+export class GridSettings {
     @property({type: cc.Integer, tooltip: "Grid width"})
-    gridWidth: number = 10;
+    gridWidth: number = 9;
     @property({type: cc.Integer, tooltip: "Grid height"})
-    gridHeight: number = 10;
-
+    gridHeight: number = 9;
     @property({type: cc.Integer, tooltip: "Tile size"})
-    tileSize: number = 50;
+    tileSize: number = 33;
     @property({type: cc.Integer, tooltip: "Spacing"})
-    spacing: number = 5;
+    spacing: number = 1;
+}
 
+@ccclass('GameSettings')
+export class GameSettings {
     @property({type: cc.Integer, tooltip: "Min blast group size"})
     minBlastGroupSize: number = 3;
-
     @property({type: [TileBlueprint], tooltip: "Available tiles"})
     tileBlueprints: TileBlueprint[] = [];
-
-    @property({type: cc.Node, tooltip: "Background sprite node"})
-    backgroundFrame: cc.Node = null;
-    @property({type: cc.Integer, tooltip: "Background Inset"})
-    backgroundInset: number = 20;
-    @property({type: cc.Integer, tooltip: "Background Padding"})
-    backgroundPadding: number = 20;
-
     @property({type: cc.Integer, tooltip: "Max turns"})
     maxTurnsCount = 20;
     @property({type: cc.Integer, tooltip: "Score need"})
     scoreNeedToWin = 500;
     @property({type: cc.Integer, tooltip: "Max board shuffles"})
     maxBoardShuffles = 3;
+}
+
+@ccclass('BackgroundSettings')
+export class BackgroundSettings {
+    @property({type: cc.Node, tooltip: "Background sprite node"})
+    backgroundFrame: cc.Node = null;
+    @property({type: cc.Integer, tooltip: "Background Inset"})
+    backgroundInset: number = 70;
+    @property({type: cc.Integer, tooltip: "Background Padding"})
+    backgroundPadding: number = 50;
+}
+
+@ccclass
+export default class GameManager extends cc.Component {
+    @property({type: GridSettings, tooltip: "Grid Settings"})
+    gridSettings = new GridSettings();
+    @property({type: GameSettings, tooltip: "Game Settings"})
+    gameSettings = new GameSettings();
+    @property({type: BackgroundSettings, tooltip: "Background Settings"})
+    backgroundSettings = new BackgroundSettings();
 
     private grid: Grid | null = null;
     private boardView: BoardView | null = null;
@@ -60,13 +73,13 @@ export default class GameManager extends cc.Component {
     }
 
     private validateBlueprints() {
-        if (this.tileBlueprints.length == 0) {
+        if (this.gameSettings.tileBlueprints.length == 0) {
             cc.error('GameManager.validateBlueprints(): tileBlueprints is empty');
             return;
         }
 
         const checked = new Set<string>;
-        this.tileBlueprints.forEach((bp, index) => {
+        this.gameSettings.tileBlueprints.forEach((bp, index) => {
             if (!bp.id) {
                 cc.error(`GameManager.validateBlueprints(): Blueprint element ${index} have no ID`);
             }
@@ -82,19 +95,21 @@ export default class GameManager extends cc.Component {
     }
 
     private initializeBoard() {
-        this.boardView = new BoardView(this.tileSize, this.spacing, this.backgroundPadding, this.backgroundInset);
-        this.gridStartPosition = this.boardView.setup(this.backgroundFrame, this.gridWidth, this.gridHeight);
+        this.boardView = new BoardView(this.gridSettings.tileSize, this.gridSettings.spacing,
+            this.backgroundSettings.backgroundPadding, this.backgroundSettings.backgroundInset);
+        this.gridStartPosition = this.boardView.setup(this.backgroundSettings.backgroundFrame,
+            this.gridSettings.gridWidth,this.gridSettings.gridHeight);
 
         this.gridContext = {
             getTile: (r, c) => this.grid!.getTile(r, c),
             getNeighbors: (t) => this.grid!.getNeighbors(t),
             getGroup: (t) => this.grid!.getGroup(t),
-            getMinBlastGroupSize: () => this.minBlastGroupSize
+            getMinBlastGroupSize: () => this.gameSettings.minBlastGroupSize
         };
     }
 
     private startNewGame() {
-        this.grid = new Grid(this.gridWidth, this.gridHeight, this.tileBlueprints);
+        this.grid = new Grid(this.gridSettings.gridWidth, this.gridSettings.gridHeight, this.gameSettings.tileBlueprints);
         this.renderInitialGrid();
         this.turnsCount = 0;
         this.updateMoves();
@@ -103,8 +118,8 @@ export default class GameManager extends cc.Component {
     private renderInitialGrid() {
         if (!this.grid || !this.boardView) return;
 
-        for (let row = 0; row < this.gridHeight; row++) {
-            for (let col = 0; col < this.gridWidth; col++) {
+        for (let row = 0; row < this.gridSettings.gridHeight; row++) {
+            for (let col = 0; col < this.gridSettings.gridWidth; col++) {
                 const tile = this.grid.getTile(row, col);
                 if (tile) {
                     this.boardView.createTileNode(tile, this.gridStartPosition, this.onTileClicked.bind(this));
@@ -142,7 +157,7 @@ export default class GameManager extends cc.Component {
             this.boardView.shakeTile(tile);
         }
 
-        if (this.scoreCount >= this.scoreNeedToWin) {
+        if (this.scoreCount >= this.gameSettings.scoreNeedToWin) {
             this.win();
             return;
         }
@@ -163,7 +178,7 @@ export default class GameManager extends cc.Component {
 
         this.turnsCount++;
         this.updateMoves();
-        if (this.turnsCount >= this.maxTurnsCount) {
+        if (this.turnsCount >= this.gameSettings.maxTurnsCount) {
             this.lose();
         }
 
@@ -171,10 +186,10 @@ export default class GameManager extends cc.Component {
     }
 
     private updateMoves() {
-        const turnsLeft = this.maxTurnsCount - this.turnsCount;
+        const turnsLeft = this.gameSettings.maxTurnsCount - this.turnsCount;
         this.node.emit(Events.MOVES_UPDATED, {
             currentScore: this.scoreCount,
-            scoreNeeded: this.scoreNeedToWin,
+            scoreNeeded: this.gameSettings.scoreNeedToWin,
             turnsLeft: turnsLeft
         });
     }
@@ -199,18 +214,18 @@ export default class GameManager extends cc.Component {
 
     private checkExistingTurns() {
         cc.log('GameManager.checkExistingTurns()');
-        if (this.grid.haveExistingTurns(this.minBlastGroupSize)) {
+        if (this.grid.haveExistingTurns(this.gameSettings.minBlastGroupSize)) {
             this.isProcessing = false;
             return;
         }
 
         cc.log('GameManager.checkExistingTurns() there is no turns');
-        if (this.shufflesUsed >= this.maxBoardShuffles) {
+        if (this.shufflesUsed >= this.gameSettings.maxBoardShuffles) {
             this.lose();
             return;
         }
 
-        const shuffled = this.grid.shuffle(this.minBlastGroupSize);
+        const shuffled = this.grid.shuffle(this.gameSettings.minBlastGroupSize);
         this.node.emit(Events.SHUFFLE);
         this.boardView.animateShuffle(shuffled, this.gridStartPosition, () => {
             this.shufflesUsed++;
