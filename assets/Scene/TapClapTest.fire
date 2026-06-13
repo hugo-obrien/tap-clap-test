@@ -111,8 +111,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 360,
-      "height": 800
+      "width": 800,
+      "height": 600
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -123,8 +123,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        180,
         400,
+        300,
         0,
         0,
         0,
@@ -280,8 +280,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 360,
-      "height": 800
+      "width": 800,
+      "height": 600
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -362,9 +362,9 @@
         0,
         0,
         1,
-        0.432,
-        0.432,
-        0.258
+        0.765,
+        0.765,
+        0.457
       ]
     },
     "_eulerAngles": {
@@ -512,14 +512,14 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        86.69299999999998,
+        91.8,
         0,
         0,
         0,
         0,
         1,
-        1,
-        1,
+        0.8,
+        0.8,
         1
       ]
     },
@@ -581,7 +581,7 @@
     "_alignFlags": 17,
     "_left": 66.918,
     "_right": 0,
-    "_top": 184.30700000000002,
+    "_top": 105,
     "_bottom": 0,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
@@ -701,14 +701,14 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        298.296,
+        242.63749999999996,
         0,
         0,
         0,
         0,
         1,
-        0.709,
-        0.709,
+        0.4,
+        0.4,
         0.709
       ]
     },
@@ -1491,11 +1491,11 @@
     "_enabled": true,
     "_designResolution": {
       "__type__": "cc.Size",
-      "width": 360,
-      "height": 800
+      "width": 800,
+      "height": 600
     },
-    "_fitWidth": true,
-    "_fitHeight": false,
+    "_fitWidth": false,
+    "_fitHeight": true,
     "_id": "6f5cteKmlPh6NGUsUqxlFR"
   },
   {
@@ -1535,7 +1535,7 @@
     "_enabled": true,
     "gridWidth": 9,
     "gridHeight": 9,
-    "tileSize": 27,
+    "tileSize": 26,
     "spacing": 1,
     "minBlastGroupSize": 3,
     "tileBlueprints": [
@@ -1560,8 +1560,8 @@
     },
     "backgroundInset": 70,
     "backgroundPadding": 50,
-    "maxTurnsCount": 50,
-    "scoreNeedToWin": 1000,
+    "maxTurnsCount": 20,
+    "scoreNeedToWin": 100,
     "maxBoardShuffles": 3,
     "_id": "71N6d9yohAY4E1mDo+qm4e"
   },

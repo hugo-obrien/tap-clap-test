@@ -98,8 +98,8 @@ export default class UIManager extends cc.Component {
         messageContainer.addChild(bgNode);
         const graphics = bgNode.addComponent(cc.Graphics);
 
-        const bgWidth = 300;
-        const bgHeight = 120;
+        const bgWidth = 250;
+        const bgHeight = 100;
         bgNode.width = bgWidth;
         bgNode.height = bgHeight;
 
