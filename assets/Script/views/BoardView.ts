@@ -71,16 +71,16 @@ export class BoardView {
         return tileNode;
     }
 
-    public animateBlast(tiles: Tile[], onComplete: () => void) {
+    public animateBlast(tiles: Set<Tile>, onComplete: () => void) {
         let destroyedCount = 0;
-        const total = tiles.length;
+        const total = tiles.size;
 
         if (total == 0) {
             onComplete();
             return;
         }
 
-        for (const tile of tiles) {
+        tiles.forEach(tile => {
             if (tile.node) {
                 const node = tile.node;
                 cc.tween(node)
@@ -100,7 +100,7 @@ export class BoardView {
                     onComplete();
                 }
             }
-        }
+        });
     }
 
     public animateGravity(movedTiles: Tile[], startPosition: cc.Vec2) {

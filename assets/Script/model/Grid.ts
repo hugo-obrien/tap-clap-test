@@ -39,10 +39,8 @@ export class Grid {
     }
 
 
-    public removeTiles(tilesToRemove: Tile[]) {
-        for (const tile of tilesToRemove) {
-            this.tiles[tile.row][tile.col] = null;
-        }
+    public removeTiles(tilesToRemove: Set<Tile>) {
+        tilesToRemove.forEach(item => this.tiles[item.row][item.col] = null);
     }
 
     public applyGravity(): Tile[] {

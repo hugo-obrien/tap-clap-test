@@ -12,7 +12,7 @@
   "height": 112,
   "platformSettings": {},
   "subMetas": {
-    "block_rakets": {
+    "block_rockets_vertical": {
       "ver": "1.0.6",
       "uuid": "d3300634-3a7a-41e4-8e65-2679bf3f82c1",
       "importer": "sprite-frame",

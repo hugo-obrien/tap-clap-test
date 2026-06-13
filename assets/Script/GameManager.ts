@@ -6,6 +6,7 @@ import {Tile} from "./model/Tile";
 import {BoardView} from "./views/BoardView";
 import {Events} from "./model/enums/Events";
 import {IBehaviorContext, TileBehaviorRegistry} from "./behaviors/IBehavior";
+import {TileType} from "./model/enums/TileType";
 
 @ccclass('GridSettings')
 export class GridSettings {
@@ -31,6 +32,8 @@ export class GameSettings {
     scoreNeedToWin = 500;
     @property({type: cc.Integer, tooltip: "Max board shuffles"})
     maxBoardShuffles = 3;
+    @property({type: cc.Integer, tooltip: "Bomb range"})
+    bombRange: number = 2;
 }
 
 @ccclass('BackgroundSettings')
@@ -98,13 +101,14 @@ export default class GameManager extends cc.Component {
         this.boardView = new BoardView(this.gridSettings.tileSize, this.gridSettings.spacing,
             this.backgroundSettings.backgroundPadding, this.backgroundSettings.backgroundInset);
         this.gridStartPosition = this.boardView.setup(this.backgroundSettings.backgroundFrame,
-            this.gridSettings.gridWidth,this.gridSettings.gridHeight);
+            this.gridSettings.gridWidth, this.gridSettings.gridHeight);
 
         this.gridContext = {
             getTile: (r, c) => this.grid!.getTile(r, c),
             getNeighbors: (t) => this.grid!.getNeighbors(t),
             getGroup: (t) => this.grid!.getGroup(t),
-            getMinBlastGroupSize: () => this.gameSettings.minBlastGroupSize
+            getMinBlastGroupSize: () => this.gameSettings.minBlastGroupSize,
+            getBombRange: () => this.gameSettings.bombRange
         };
     }
 
@@ -137,19 +141,13 @@ export default class GameManager extends cc.Component {
             return;
         }
 
-        const behavior = TileBehaviorRegistry.get(tile.blueprint.type);
-        if (!behavior) {
-            cc.warn(`GameManager.onTileClicked(): ${tile.blueprint.type} is not supported yet`);
-            return;
-        }
-
-        const result = behavior.execute(tile, this.gridContext);
-        if (result.isSuccessful && result.affectedTiles.length > 0) {
+        const result = this.executeRecursive(tile, new Set<string>);
+        if (result.size > 0) {
             this.isProcessing = true;
-            this.grid.removeTiles(result.affectedTiles);
-            this.boardView.animateBlast(result.affectedTiles, () => this.processPostBlastSequence());
+            this.grid.removeTiles(result);
+            this.boardView.animateBlast(result, () => this.processPostBlastSequence());
 
-            let scoreCount = this.calcScore(result.affectedTiles.length);
+            let scoreCount = this.calcScore(result.size);
             this.scoreCount += scoreCount;
 
             this.node.emit(Events.FLYING_SCORE, {tile: tile.node, score: scoreCount});
@@ -161,6 +159,33 @@ export default class GameManager extends cc.Component {
             this.win();
             return;
         }
+    }
+
+    private executeRecursive(tile: Tile, checked: Set<string>): Set<Tile> {
+        let result = new Set<Tile>();
+        if (checked.has(tile.key)) {
+            return result
+        }
+
+        const behavior = TileBehaviorRegistry.get(tile.blueprint.type);
+        if (!behavior) {
+            cc.warn(`GameManager.executeRecursive() behavior for ${tile.blueprint.type} not found`);
+            return result;
+        }
+
+        checked.add(tile.key);
+        let tiles = behavior.execute(tile, this.gridContext);
+        tiles.forEach(affectedItem => {
+            result.add(affectedItem);
+            if (affectedItem.blueprint.type == TileType.COMMON) {
+                return;
+            }
+
+            let recursiveAffected = this.executeRecursive(affectedItem, checked);
+            recursiveAffected.forEach(item => result.add(item));
+        });
+
+        return result;
     }
 
     private processPostBlastSequence() {

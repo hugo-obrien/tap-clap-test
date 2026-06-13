@@ -4,7 +4,7 @@ import {TileType} from "../model/enums/TileType";
 export const TileBehaviorRegistry = new Map<TileType, ITileBehavior>();
 
 export interface ITileBehavior {
-    execute(tile: Tile, context: IBehaviorContext): IBehaviorResult;
+    execute(tile: Tile, context: IBehaviorContext): Tile[];
 }
 
 export interface IBehaviorContext {
@@ -12,11 +12,7 @@ export interface IBehaviorContext {
     getNeighbors(tile: Tile): Tile[];
     getGroup(tile: Tile): Tile[];
     getMinBlastGroupSize(): number;
-}
-
-export interface IBehaviorResult {
-    affectedTiles: Tile[],
-    isSuccessful: boolean
+    getBombRange(): number;
 }
 
 export function RegisterBehavior(type: TileType) {
