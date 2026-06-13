@@ -1560,8 +1560,8 @@
     },
     "backgroundInset": 70,
     "backgroundPadding": 50,
-    "maxTurnsCount": 20,
-    "scoreNeedToWin": 100,
+    "maxTurnsCount": 30,
+    "scoreNeedToWin": 1000,
     "maxBoardShuffles": 3,
     "_id": "71N6d9yohAY4E1mDo+qm4e"
   },

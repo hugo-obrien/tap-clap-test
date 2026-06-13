@@ -121,8 +121,8 @@ export default class UIManager extends cc.Component {
 
         const gameOverLabel = textNode.addComponent(cc.Label);
         gameOverLabel.string = payload.isWin ? 'WIN' : 'LOOSE';
-        gameOverLabel.fontSize = 75;
-        gameOverLabel.lineHeight = 75;
+        gameOverLabel.fontSize = 65;
+        gameOverLabel.lineHeight = 65;
         gameOverLabel.node.color = cc.Color.WHITE;
 
         let labelOutline = gameOverLabel.addComponent(cc.LabelOutline);
@@ -139,7 +139,7 @@ export default class UIManager extends cc.Component {
         const hintNode = new cc.Node('Hint');
         overlay.addChild(hintNode);
 
-        hintNode.y = -140;
+        hintNode.y = -120;
         const hintLabel = hintNode.addComponent(cc.Label);
         hintLabel.string = 'Press anywhere to restart';
         hintLabel.fontSize = 24;
@@ -174,9 +174,10 @@ export default class UIManager extends cc.Component {
 
         const shuffleNode = new cc.Node('ShuffleMessage');
         canvas.addChild(shuffleNode);
+        shuffleNode.y += 50;
 
         const label = shuffleNode.addComponent(cc.Label);
-        label.string = "Everyday I'm shuffling";
+        label.string = "Shuffle";
         label.fontSize = 48;
         label.node.color = new cc.Color(255, 215, 0);
 
@@ -193,12 +194,12 @@ export default class UIManager extends cc.Component {
         shuffleNode.opacity = 0;
 
         cc.tween(shuffleNode)
-            .to(0.2, { scale: 1.2, opacity: 255 }, { easing: 'backOut' })
-            .to(0.15, { angle: -8 })
-            .to(0.15, { angle: 8 })
-            .to(0.15, { angle: 0 })
+            .to(0.2, {scale: 1.2, opacity: 255}, {easing: 'backOut'})
+            .to(0.15, {angle: -8})
+            .to(0.15, {angle: 8})
+            .to(0.15, {angle: 0})
             .delay(0.5)
-            .to(0.25, { scale: 1.5, opacity: 0 }, { easing: 'sineIn' })
+            .to(0.25, {scale: 1.5, opacity: 0}, {easing: 'sineIn'})
             .call(() => shuffleNode.destroy())
             .start();
     }
