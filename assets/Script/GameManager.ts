@@ -26,6 +26,8 @@ export class GameSettings {
     minBlastGroupSize: number = 3;
     @property({type: [TileBlueprint], tooltip: "Available tiles"})
     tileBlueprints: TileBlueprint[] = [];
+    @property({type: [TileBlueprint], tooltip: "Bonus tiles"})
+    bonusTileBlueprints: TileBlueprint[] = [];
     @property({type: cc.Integer, tooltip: "Max turns"})
     maxTurnsCount = 20;
     @property({type: cc.Integer, tooltip: "Score need"})
@@ -34,6 +36,8 @@ export class GameSettings {
     maxBoardShuffles = 3;
     @property({type: cc.Integer, tooltip: "Bomb range"})
     bombRange: number = 2;
+    @property({type: cc.Integer, tooltip: "Min bonus sequence size"})
+    minBonusSequenceSize = 7;
 }
 
 @ccclass('BackgroundSettings')
@@ -113,7 +117,8 @@ export default class GameManager extends cc.Component {
     }
 
     private startNewGame() {
-        this.grid = new Grid(this.gridSettings.gridWidth, this.gridSettings.gridHeight, this.gameSettings.tileBlueprints);
+        this.grid = new Grid(this.gridSettings.gridWidth, this.gridSettings.gridHeight, this.gameSettings.tileBlueprints,
+            this.gameSettings.bonusTileBlueprints);
         this.renderInitialGrid();
         this.turnsCount = 0;
         this.updateMoves();
@@ -145,6 +150,10 @@ export default class GameManager extends cc.Component {
         if (result.size > 0) {
             this.isProcessing = true;
             this.grid.removeTiles(result);
+            if (result.size >= this.gameSettings.minBonusSequenceSize && tile.blueprint.type === TileType.COMMON) {
+                let bonusTile = this.grid.createBonusTile(tile.row, tile.col);
+                this.boardView.createTileNode(bonusTile, this.gridStartPosition, this.onTileClicked.bind(this));
+            }
             this.boardView.animateBlast(result, () => this.processPostBlastSequence());
 
             let scoreCount = this.calcScore(result.size);

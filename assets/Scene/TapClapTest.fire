@@ -1569,7 +1569,9 @@
       },
       {
         "__id__": 42
-      },
+      }
+    ],
+    "bonusTileBlueprints": [
       {
         "__id__": 43
       }
@@ -1577,7 +1579,8 @@
     "maxTurnsCount": 20,
     "scoreNeedToWin": 5000,
     "maxBoardShuffles": 3,
-    "bombRange": 2
+    "bombRange": 2,
+    "minBonusSequenceSize": 7
   },
   {
     "__type__": "TileBlueprint",

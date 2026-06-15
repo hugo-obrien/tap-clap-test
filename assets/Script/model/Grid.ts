@@ -8,11 +8,13 @@ export class Grid {
     public tiles: (Tile | null)[][];
 
     private readonly availableBlueprints: TileBlueprint[];
+    private readonly bonusBlueprints: TileBlueprint[];
 
-    constructor(width: number, height: number, blueprints: TileBlueprint[]) {
+    constructor(width: number, height: number, blueprints: TileBlueprint[], bonusBlueprints: TileBlueprint[]) {
         this.width = width;
         this.height = height;
         this.availableBlueprints = blueprints;
+        this.bonusBlueprints = bonusBlueprints;
         this.tiles = [];
         this.initialize();
     }
@@ -158,6 +160,13 @@ export class Grid {
         } else {
             return this.shuffle(minBlastGroupSize);
         }
+    }
+
+    public createBonusTile(row: number, col: number): Tile {
+        const bonusBlueprint = this.bonusBlueprints[Math.floor(Math.random() * this.bonusBlueprints.length)];
+        let tile = new Tile(bonusBlueprint, row, col);
+        this.tiles[row][col] = tile;
+        return tile;
     }
 
     private initialize() {
