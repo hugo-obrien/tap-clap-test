@@ -1576,8 +1576,8 @@
         "__id__": 43
       }
     ],
-    "maxTurnsCount": 20,
-    "scoreNeedToWin": 5000,
+    "maxTurnsCount": 25,
+    "scoreNeedToWin": 500,
     "maxBoardShuffles": 3,
     "bombRange": 2,
     "minBonusSequenceSize": 7
