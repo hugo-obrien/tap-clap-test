@@ -13,18 +13,34 @@ export class GameManager {
     }
 
     private _score: number = 0;
+    private _isInitialized: boolean = false;
 
     public get score(): number {
         return this._score;
     }
 
+    public get isInitialized(): boolean {
+        return this._isInitialized;
+    }
+
     public initialize() {
+        if (this._isInitialized) {
+            cc.log('GameManager.initialize(): Already initialized, skipping');
+            return
+        }
+
+        this._isInitialized = true;
+
         this._score = SaveManager.instance.loadScore();
         this.notifyScoreChanged();
     }
 
     public addScore(amount: number) {
         if (amount <= 0) return;
+
+        if (!this.isInitialized) {
+            this.initialize();
+        }
 
         this._score += amount;
         this.notifyScoreChanged();
