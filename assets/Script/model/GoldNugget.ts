@@ -1,5 +1,5 @@
 import ccclass = cc._decorator.ccclass;
-import {GameManager} from "./GameManager";
+import {GameManager} from "../core/managers/GameManager";
 
 @ccclass
 export class GoldNugget extends cc.Component {

@@ -1,0 +1,40 @@
+{
+  "buildings": [
+    {
+      "id": "townhall",
+      "displayName": "townhall",
+      "canUpgradeInfinitely": false,
+      "upgradeMultiplier": 1,
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "income": 1
+        },
+        {
+          "level": 2,
+          "cost": 500,
+          "income": 5
+        },
+        {
+          "level": 1,
+          "cost": 100,
+          "income": 1
+        }
+      ]
+    },
+    {
+      "id": "robo-miner",
+      "displayName": "robo-miner",
+      "canUpgradeInfinitely": true,
+      "upgradeMultiplier": 1.15,
+      "levels": [
+        {
+          "level": 1,
+          "cost": 10,
+          "income": 1
+        }
+      ]
+    }
+  ]
+}

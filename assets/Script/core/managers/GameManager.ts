@@ -1,5 +1,5 @@
 import {SaveManager} from "./SaveManager";
-import {GameEvent, GlobalEvent} from "./GlobalEvent";
+import {GameEvent, GlobalEvent} from "../GlobalEvent";
 
 export class GameManager {
 
@@ -36,15 +36,17 @@ export class GameManager {
     }
 
     public addScore(amount: number) {
-        if (amount <= 0) return;
-
         if (!this.isInitialized) {
             this.initialize();
         }
 
-        this._score += amount;
-        this.notifyScoreChanged();
+        const newScore = this._score + amount;
+        if (newScore < 0) {
+            throw new Error('GameManager.addScore(): resulting value is below zero');
+        }
 
+        this._score = newScore;
+        this.notifyScoreChanged();
         SaveManager.instance.saveScore(this._score); // todo do not save on every score changing
     }
 

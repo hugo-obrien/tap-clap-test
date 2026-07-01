@@ -1,6 +1,6 @@
 import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
-import {SceneManager, SceneName} from "../../SceneManager";
+import {SceneManager, SceneName} from "../../core/managers/SceneManager";
 
 @ccclass
 export class SceneButton extends cc.Component {
