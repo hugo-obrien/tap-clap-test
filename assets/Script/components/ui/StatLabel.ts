@@ -5,12 +5,13 @@ import {GameEvent, GlobalEvent} from "../../GlobalEvent";
 
 export enum StatType {
     GOLD = 0,
+    MINER = 1
 }
 
 @ccclass
 export class StatLabel extends cc.Component {
     @property({type: cc.Enum(StatType)})
-    private statType: StatType = StatType.GOLD;
+    private statType: StatType = null;
 
     @property(cc.Label)
     private label: cc.Label = null;
@@ -52,6 +53,7 @@ export class StatLabel extends cc.Component {
     private getEventForStat(statType: StatType): string | null {
         switch (statType) {
             case StatType.GOLD: return GameEvent.SCORE_CHANGED;
+            case StatType.MINER: return GameEvent.WORKERS_CHANGED;
             default: {
                 cc.warn(`StatLabel.getEventForStat(): event for ${statType} not found`);
                 return null;
@@ -63,6 +65,8 @@ export class StatLabel extends cc.Component {
         switch (statType) {
             case StatType.GOLD:
                 return GameManager.instance.gold;
+            case StatType.MINER:
+                return GameManager.instance.workers.length;
             default: {
                 cc.warn(`StatLabel.getValueForStat(): value for ${statType} not found`);
                 return -1;
