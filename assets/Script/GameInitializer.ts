@@ -1,5 +1,5 @@
 import ccclass = cc._decorator.ccclass;
-import {GameManager} from "./GameManager";
+import {GameManager} from "./managers/GameManager";
 
 @ccclass
 export class GameInitializer extends cc.Component {

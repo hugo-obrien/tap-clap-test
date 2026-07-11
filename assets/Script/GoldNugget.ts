@@ -1,5 +1,5 @@
 import ccclass = cc._decorator.ccclass;
-import {GameManager} from "./GameManager";
+import {GameManager} from "./managers/GameManager";
 
 @ccclass
 export class GoldNugget extends cc.Component {
@@ -12,7 +12,7 @@ export class GoldNugget extends cc.Component {
     }
 
     private onNuggetTapped(event: cc.Event.EventTouch) {
-        GameManager.instance.addScore(1);
+        GameManager.instance.addGold(1);
 
         this.playTapAnimation();
     }

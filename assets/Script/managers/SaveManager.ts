@@ -9,7 +9,7 @@ export class SaveManager {
 
     private readonly KEY_SCORE = 'player_score';
 
-    public saveScore(score: number): void {
+    public saveGold(score: number): void {
         cc.sys.localStorage.setItem(this.KEY_SCORE, score.toString());
     }
 

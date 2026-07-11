@@ -1,5 +1,5 @@
 import {SaveManager} from "./SaveManager";
-import {GameEvent, GlobalEvent} from "./GlobalEvent";
+import {GameEvent, GlobalEvent} from "../GlobalEvent";
 
 export class GameManager {
 
@@ -12,11 +12,11 @@ export class GameManager {
         return this._instance;
     }
 
-    private _score: number = 0;
+    private _gold: number = 0;
     private _isInitialized: boolean = false;
 
-    public get score(): number {
-        return this._score;
+    public get gold(): number {
+        return this._gold;
     }
 
     public get isInitialized(): boolean {
@@ -31,24 +31,24 @@ export class GameManager {
 
         this._isInitialized = true;
 
-        this._score = SaveManager.instance.loadScore();
+        this._gold = SaveManager.instance.loadScore();
         this.notifyScoreChanged();
     }
 
-    public addScore(amount: number) {
+    public addGold(amount: number) {
         if (amount <= 0) return;
 
         if (!this.isInitialized) {
             this.initialize();
         }
 
-        this._score += amount;
+        this._gold += amount;
         this.notifyScoreChanged();
 
-        SaveManager.instance.saveScore(this._score); // todo do not save on every score changing
+        SaveManager.instance.saveGold(this._gold); // todo do not save on every score changing
     }
 
     private notifyScoreChanged() {
-        GlobalEvent.emit(GameEvent.SCORE_CHANGED, this._score);
+        GlobalEvent.emit(GameEvent.SCORE_CHANGED, this._gold);
     }
 }

@@ -1,7 +1,7 @@
 import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
+import {GameManager} from "../../managers/GameManager";
 import {GameEvent, GlobalEvent} from "../../GlobalEvent";
-import {GameManager} from "../../GameManager";
 
 export enum StatType {
     GOLD = 0,
@@ -62,7 +62,7 @@ export class StatLabel extends cc.Component {
     private getValueForStat(statType: StatType) {
         switch (statType) {
             case StatType.GOLD:
-                return GameManager.instance.score;
+                return GameManager.instance.gold;
             default: {
                 cc.warn(`StatLabel.getValueForStat(): value for ${statType} not found`);
                 return -1;
