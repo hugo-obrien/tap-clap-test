@@ -15,14 +15,16 @@ export class GameManager extends cc.Component{
 
     public static get instance(): GameManager {
         if (!this._instance) {
-            this._instance = new GameManager();
+            const node = new cc.Node('GameManager');
+            this._instance = node.addComponent(GameManager);
+            cc.game.addPersistRootNode(node);
         }
         return this._instance;
     }
 
     private _gold: number = 0;
     private _isInitialized: boolean = false;
-    private _workers: MineWorker[];
+    private _workers: MineWorker[] = [];
 
     public get gold(): number {
         return this._gold;
@@ -51,24 +53,24 @@ export class GameManager extends cc.Component{
             return
         }
 
-        this._gold = SaveManager.instance.loadScore();
-        this.notifyScoreChanged();
+        this._isInitialized = true;
 
-        this._workers = SaveManager.instance.loadWorkers();
-        this.notifyWorkersChanged();
+        cc.game.on(cc.game.EVENT_HIDE, this.saveGame, this);
+
+        this.tryLoadGame();
 
         this.schedule(this.onTick, GameManager.TICK_INTERVAL);
-
-        this._isInitialized = true;
     }
 
     protected onDestroy() {
         this.unschedule(this.onTick);
+        cc.game.off(cc.game.EVENT_HIDE, this.saveGame, this);
+        this.saveGame();
     }
 
     public addGold(amount: number) {
         if (amount < 0 && Math.abs(amount) > this._gold) {
-            cc.log(`Not enought gold. Exists: ${this._gold}, required: ${amount}`);
+            cc.log(`Not enough gold. Exists: ${this._gold}, required: ${amount}`);
             return
         }
 
@@ -78,8 +80,6 @@ export class GameManager extends cc.Component{
 
         this._gold += amount;
         this.notifyScoreChanged();
-
-        SaveManager.instance.saveGold(this._gold); // todo do not save on every score changing
     }
 
     public buyWorker() {
@@ -96,13 +96,43 @@ export class GameManager extends cc.Component{
     public getNextWorkerPrice(): number {
         const minersCount = this._workers.filter(worker => worker instanceof Miner).length;
         const mockPrice = 10; // rework for configs
-        return Math.floor(mockPrice * Math.pow(GameManager.DEFAULT_PRICE_MULTIPLIER, minersCount - 1));
+        return Math.floor(mockPrice * Math.pow(GameManager.DEFAULT_PRICE_MULTIPLIER, minersCount));
     }
 
     public addWorker(worker: MineWorker) {
         this._workers.push(worker);
-        SaveManager.instance.saveWorkers(this._workers);
         this.notifyWorkersChanged();
+    }
+
+    private saveGame() {
+        SaveManager.instance.saveGold(this._gold);
+        SaveManager.instance.saveWorkers(this._workers);
+        SaveManager.instance.saveLastTimestamp();
+    }
+
+    private tryLoadGame() {
+        cc.log('GameManager.loadGame() called');
+
+        this._gold = SaveManager.instance.loadScore();
+        this.notifyScoreChanged();
+
+        this._workers = SaveManager.instance.loadWorkers();
+        this.notifyWorkersChanged();
+
+        const lastTimestamp = SaveManager.instance.loadLastTimestamp();
+        const diffSeconds = Math.floor((Date.now() - lastTimestamp) / 1000);
+
+        this.processPostLoad(diffSeconds);
+    }
+
+    private processPostLoad(diffSeconds: number) {
+        const income = this.goldPerSecond;
+        if (income > 0 && diffSeconds > 0) {
+            const offlineMined = income * diffSeconds;
+            this._gold += offlineMined;
+            this.notifyScoreChanged();
+            cc.log(`Offline mined: ${offlineMined}`);
+        }
     }
 
     private notifyScoreChanged() {
@@ -114,9 +144,10 @@ export class GameManager extends cc.Component{
     }
 
     private onTick() {
-       const income = this.goldPerSecond;
-       if (income > 0) {
-           this.addGold(income);
-       }
+        const income = this.goldPerSecond;
+        if (income > 0) {
+            this._gold += income;
+            this.notifyScoreChanged();
+        }
     }
 }

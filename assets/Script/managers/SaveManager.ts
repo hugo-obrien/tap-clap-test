@@ -12,6 +12,7 @@ export class SaveManager {
 
     private readonly KEY_SCORE = 'player_score';
     private readonly KEY_WORKERS = 'mine_workers';
+    private readonly KEY_LAST_TIMESTAMP = 'last_timestamp';
 
     public saveGold(score: number): void {
         cc.sys.localStorage.setItem(this.KEY_SCORE, score.toString());
@@ -28,7 +29,6 @@ export class SaveManager {
     }
 
     public loadWorkers(): MineWorker[] {
-        cc.log('SaveManager.loadWorkers()');
         const json = cc.sys.localStorage.getItem(this.KEY_WORKERS);
         if (!json) {
             cc.log('SaveManager.loadWorkers(): empty json');
@@ -42,5 +42,15 @@ export class SaveManager {
             cc.error('Failed to parse mine workers data:', ex);
             return [];
         }
+    }
+
+    public saveLastTimestamp() {
+        const now = Date.now();
+        cc.sys.localStorage.setItem(this.KEY_LAST_TIMESTAMP, now.toString());
+    }
+
+    public loadLastTimestamp(): number {
+        const lastTimestamp = cc.sys.localStorage.getItem(this.KEY_LAST_TIMESTAMP);
+        return lastTimestamp ? parseInt(lastTimestamp, 10) : Date.now();
     }
 }

@@ -1,7 +1,8 @@
 export enum SceneName {
     TOWN_HALL = 0,
     MINE = 1,
-    BUILD_MODE = 2
+    BUILDINGS = 2,
+    WORKERS = 3
 }
 
 export class SceneManager {
@@ -19,7 +20,8 @@ export class SceneManager {
     private readonly SCENE_MAP: {[key: number]: string} = {
         [SceneName.TOWN_HALL]: 'TownHall',
         [SceneName.MINE]: 'Mine',
-        [SceneName.BUILD_MODE]: 'BuildMode'
+        [SceneName.BUILDINGS]: 'Buildings',
+        [SceneName.WORKERS]: 'Workers'
     }
 
     public loadScene(sceneName: SceneName) {
