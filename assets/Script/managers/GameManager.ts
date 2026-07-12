@@ -4,13 +4,13 @@ import {MineWorker, MineWorkerTypes} from "../model/Worker";
 import {Miner} from "../model/Miner";
 import {MineWorkerFactory} from "../services/MineWorkerFactory";
 import ccclass = cc._decorator.ccclass;
+import {ConfigLoader} from "../configs/ConfigLoader";
 
 @ccclass
 export class GameManager extends cc.Component{
 
     private static _instance: GameManager;
 
-    private static readonly DEFAULT_PRICE_MULTIPLIER: number = 1.15;
     private static readonly TICK_INTERVAL: number = 1;
 
     public static get instance(): GameManager {
@@ -47,13 +47,18 @@ export class GameManager extends cc.Component{
         return this._isInitialized;
     }
 
-    public initialize() {
+    public async initialize() {
         if (this._isInitialized) {
             cc.log('GameManager.initialize(): Already initialized, skipping');
             return
         }
 
         this._isInitialized = true;
+
+        if (!ConfigLoader.instance.isLoaded) {
+            cc.log(`GameManager.initialize(): Waiting for config load...`);
+            await ConfigLoader.instance.loadConfig();
+        }
 
         cc.game.on(cc.game.EVENT_HIDE, this.saveGame, this);
 
@@ -94,9 +99,13 @@ export class GameManager extends cc.Component{
     }
 
     public getNextWorkerPrice(): number {
+        let config = ConfigLoader.instance.config;
+
         const minersCount = this._workers.filter(worker => worker instanceof Miner).length;
-        const mockPrice = 10; // rework for configs
-        return Math.floor(mockPrice * Math.pow(GameManager.DEFAULT_PRICE_MULTIPLIER, minersCount));
+        const priceMultiplier = config.priceMultiplier;
+        const mockPrice = config.mockMinerPrice;
+
+        return Math.floor(mockPrice * Math.pow(priceMultiplier, minersCount));
     }
 
     public addWorker(worker: MineWorker) {
