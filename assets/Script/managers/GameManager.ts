@@ -150,6 +150,7 @@ export class GameManager extends cc.Component{
 
     private notifyWorkersChanged() {
         GlobalEvent.emit(GameEvent.WORKERS_CHANGED, this._workers.length);
+        GlobalEvent.emit(GameEvent.INCOME_CHANGED, this.goldPerSecond);
     }
 
     private onTick() {

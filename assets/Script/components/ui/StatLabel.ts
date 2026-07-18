@@ -2,6 +2,7 @@ import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
 import {GameManager} from "../../managers/GameManager";
 import {GameEvent, GlobalEvent} from "../../GlobalEvent";
+import {Utils} from "../../utils/Utils";
 
 export enum StatType {
     GOLD = 0,
@@ -75,10 +76,6 @@ export class StatLabel extends cc.Component {
     }
 
     private updateText(value: number) {
-        this.label.string = this.formatValue(value);
-    }
-
-    private formatValue(value: number): string {
-        return value.toString(); // todo template for formatting
+        this.label.string = Utils.formatValue(value);
     }
 }

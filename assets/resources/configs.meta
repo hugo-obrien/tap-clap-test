@@ -1,13 +1,3 @@
-{
-  "ver": "1.1.3",
-  "uuid": "6279921b-5c88-4f5c-b1b6-791d494b643a",
-  "importer": "folder",
-  "isBundle": false,
-  "bundleName": "",
-  "priority": 1,
-  "compressionType": {},
-  "optimizeHotUpdate": {},
-  "inlineSpriteFrames": {},
-  "isRemoteBundle": {},
-  "subMetas": {}
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:e9d9e31661f698792568d5b64c68783a592a090a00bc474cee4aaf74dfc87656
+size 274
