@@ -1,8 +1,8 @@
 import ccclass = cc._decorator.ccclass;
 import property = cc._decorator.property;
-import {GameManager} from "../managers/GameManager";
-import {GameEvent, GlobalEvent} from "../GlobalEvent";
-import {Utils} from "../utils/Utils";
+import {GameManager} from "../../managers/GameManager";
+import {GameEvent, GlobalEvent} from "../../GlobalEvent";
+import {Utils} from "../../utils/Utils";
 
 @ccclass
 export default class Townhall extends cc.Component {

@@ -53,4 +53,8 @@ export class SaveManager {
         const lastTimestamp = cc.sys.localStorage.getItem(this.KEY_LAST_TIMESTAMP);
         return lastTimestamp ? parseInt(lastTimestamp, 10) : Date.now();
     }
+
+    public clearAll() {
+        cc.sys.localStorage.clear();
+    }
 }

@@ -11,7 +11,7 @@ export class GameManager extends cc.Component{
 
     private static _instance: GameManager;
 
-    private static readonly TICK_INTERVAL: number = 1;
+    //private static readonly TICK_INTERVAL: number = 1;
 
     public static get instance(): GameManager {
         if (!this._instance) {
@@ -64,13 +64,26 @@ export class GameManager extends cc.Component{
 
         this.tryLoadGame();
 
-        this.schedule(this.onTick, GameManager.TICK_INTERVAL);
+        //this.schedule(this.onTick, GameManager.TICK_INTERVAL);
     }
 
     protected onDestroy() {
         this.unschedule(this.onTick);
         cc.game.off(cc.game.EVENT_HIDE, this.saveGame, this);
         this.saveGame();
+    }
+
+    protected update(dt: number) {
+        if (!this._isInitialized) {
+            return;
+        }
+
+        const income = this.goldPerSecond;
+        if (income > 0) {
+            const goldEarned = income * dt;
+            this._gold += goldEarned;
+            this.notifyScoreChanged();
+        }
     }
 
     public addGold(amount: number) {
