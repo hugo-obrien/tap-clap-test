@@ -1,5 +1,7 @@
 import ccclass = cc._decorator.ccclass;
 import {GameManager} from "../../managers/GameManager";
+import {Inventory} from "../../model/Inventory";
+import {ResourceType} from "../../model/resources/Resource";
 
 @ccclass
 export class GoldNugget extends cc.Component {
@@ -12,7 +14,7 @@ export class GoldNugget extends cc.Component {
     }
 
     private onNuggetTapped(event: cc.Event.EventTouch) {
-        GameManager.instance.addGold(1);
+        Inventory.instance.add(ResourceType.GOLD, 1);
 
         this.playTapAnimation();
     }

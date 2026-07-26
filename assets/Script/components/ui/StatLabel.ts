@@ -3,6 +3,7 @@ import property = cc._decorator.property;
 import {GameManager} from "../../managers/GameManager";
 import {GameEvent, GlobalEvent} from "../../GlobalEvent";
 import {Utils} from "../../utils/Utils";
+import {ResourceType} from "../../model/resources/Resource";
 
 export enum StatType {
     GOLD = 0,
@@ -25,17 +26,31 @@ export class StatLabel extends cc.Component {
 
         const eventName = this.getEventForStat(this.statType);
         if (eventName) {
-            GlobalEvent.on(eventName, this.updateText, this);
+            switch (eventName) {
+                case GameEvent.RESOURCE_CHANGED: {
+                    GlobalEvent.on(eventName, this.onResourceChanged, this);
+                    break;
+                }
+                default:
+                    GlobalEvent.on(eventName, this.updateText, this);
+            }
+
         }
 
-        //this.updateText(this.getValueForStat(this.statType));
         this.refreshValue();
     }
 
     protected onDestroy() {
         const eventName = this.getEventForStat(this.statType);
         if (eventName) {
-            GlobalEvent.off(eventName, this.updateText, this);
+            switch (eventName) {
+                case GameEvent.RESOURCE_CHANGED: {
+                    GlobalEvent.off(eventName, this.onResourceChanged, this);
+                    break;
+                }
+                default:
+                    GlobalEvent.off(eventName, this.updateText, this);
+            }
         }
     }
 
@@ -53,8 +68,10 @@ export class StatLabel extends cc.Component {
 
     private getEventForStat(statType: StatType): string | null {
         switch (statType) {
-            case StatType.GOLD: return GameEvent.SCORE_CHANGED;
-            case StatType.MINER: return GameEvent.WORKERS_CHANGED;
+            case StatType.GOLD:
+                return GameEvent.RESOURCE_CHANGED;
+            case StatType.MINER:
+                return GameEvent.WORKERS_CHANGED;
             default: {
                 cc.warn(`StatLabel.getEventForStat(): event for ${statType} not found`);
                 return null;
@@ -72,6 +89,12 @@ export class StatLabel extends cc.Component {
                 cc.warn(`StatLabel.getValueForStat(): value for ${statType} not found`);
                 return -1;
             }
+        }
+    }
+
+    private onResourceChanged(typeId: string, amount: number) {
+        if (this.statType === StatType.GOLD && typeId === ResourceType.GOLD) {
+            this.updateText(amount);
         }
     }
 

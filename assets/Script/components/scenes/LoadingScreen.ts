@@ -1,9 +1,9 @@
-import { ConfigLoader } from "../../configs/ConfigLoader";
-import ccclass = cc._decorator.ccclass;
-import property = cc._decorator.property;
-import { GameManager } from "../../managers/GameManager";
+import {ConfigLoader} from "../../configs/ConfigLoader";
+import {GameManager} from "../../managers/GameManager";
 import {SceneManager, SceneName} from "../../managers/SceneManager";
 import {BuiltinCommands} from "../../debug/commands/BuiltinCommands";
+import ccclass = cc._decorator.ccclass;
+import property = cc._decorator.property;
 
 @ccclass
 export class LoadingScreen extends cc.Component {

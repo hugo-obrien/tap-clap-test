@@ -8,7 +8,7 @@ export interface MineWorker {
 
 export interface MineWorkerSaveData {
     type: MineWorkerTypes;
-    goldPerSecond: number;
+    //goldPerSecond: number;
 }
 
 export enum MineWorkerTypes {

@@ -1,5 +1,3 @@
-import value = cc.js.value;
-
 export class Utils {
     public static buildName(base: string, className: string) {
         return `${base}_${className}_${Date.now()}_${Math.random()}`;
@@ -7,7 +5,7 @@ export class Utils {
 
     public static formatValue(num: number): string {
         if (num < 1000) {
-            return num.toString();
+            return Math.round(num).toString();
         }
 
         const suffixes = [

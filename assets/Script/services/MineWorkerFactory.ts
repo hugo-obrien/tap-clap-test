@@ -1,10 +1,10 @@
-import {MineWorker, MineWorkerSaveData, MineWorkerTypes} from "../model/Worker";
-import {Miner} from "../model/Miner";
+import {MineWorker, MineWorkerSaveData, MineWorkerTypes} from "../model/units/Worker";
+import {Miner} from "../model/units/Miner";
 
 export class MineWorkerFactory {
     public static createByData(data: MineWorkerSaveData): MineWorker {
         switch (data.type) {
-            case MineWorkerTypes.MINER: return new Miner(data.goldPerSecond);
+            case MineWorkerTypes.MINER: return new Miner();
             default:
                 cc.warn(`MineWorker for type ${data.type} not defined`);
         }

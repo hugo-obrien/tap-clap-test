@@ -1,4 +1,5 @@
 import {ConfigData} from "./ConfigData";
+import {ResourceConfigLoader} from "./ResourceConfigLoader";
 
 export class ConfigLoader {
     private static _instance: ConfigLoader;
@@ -11,7 +12,7 @@ export class ConfigLoader {
         return this._instance;
     }
 
-    public get config(): ConfigData {
+    public get globalConfig(): ConfigData {
         if (!this._configData) {
             throw new Error("ConfigLoader: Config not loaded yet. Call loadConfig() first");
         }
@@ -19,12 +20,27 @@ export class ConfigLoader {
     }
 
     public get isLoaded(): boolean {
-        return this._configData !== null;
+        return this._configData !== null
+            && ResourceConfigLoader.instance.isLoaded;
     }
 
     public async loadConfig(): Promise<void> {
+        cc.log('ConfigLoader: Starting loading configs...');
+        try {
+            await Promise.all([
+                this.loadGlobalConfig(),
+                ResourceConfigLoader.instance.load()
+            ])
+            cc.log('ConfigLoader: Successfully loaded');
+        } catch (error) {
+            cc.error(`ConfigLoader.loadConfig() failed: ${error.message}`);
+            throw error;
+        }
+    }
+
+    public async loadGlobalConfig(): Promise<void> {
         return new Promise((resolve, reject) => {
-            cc.log('ConfigLoader: Starting loading configs...');
+            cc.log('Loading global configs...');
 
             cc.resources.load("configs/global-config", cc.JsonAsset, (err, jsonAsset) => {
                 if (err) {

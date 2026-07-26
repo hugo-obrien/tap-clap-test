@@ -1,5 +1,10 @@
-import {MineWorker, MineWorkerSaveData} from "../model/Worker";
 import {MineWorkerFactory} from "../services/MineWorkerFactory";
+import {MineWorker, MineWorkerSaveData} from "../model/units/Worker";
+
+export interface ResourceSaveEntry {
+    typeId: string;
+    amount: number;
+}
 
 export class SaveManager {
     private static _instance: SaveManager;
@@ -10,17 +15,17 @@ export class SaveManager {
         return this._instance;
     }
 
-    private readonly KEY_SCORE = 'player_score';
     private readonly KEY_WORKERS = 'mine_workers';
     private readonly KEY_LAST_TIMESTAMP = 'last_timestamp';
+    private readonly KEY_INVENTORY = 'player_inventory';
 
-    public saveGold(score: number): void {
-        cc.sys.localStorage.setItem(this.KEY_SCORE, score.toString());
+    public saveInventory(data: ResourceSaveEntry[]) {
+        cc.sys.localStorage.setItem(this.KEY_INVENTORY, JSON.stringify(data));
     }
 
-    public loadScore(): number {
-        const savedScore = cc.sys.localStorage.getItem(this.KEY_SCORE);
-        return savedScore ? parseInt(savedScore, 10) : 0;
+    public loadInventory(): ResourceSaveEntry[] {
+        const saved = cc.sys.localStorage.getItem(this.KEY_INVENTORY);
+        return saved ? (JSON.parse(saved) as ResourceSaveEntry[]) : [];
     }
 
     public saveWorkers(workers: MineWorker[]) {
@@ -37,7 +42,9 @@ export class SaveManager {
 
         try {
             const dataArray: MineWorkerSaveData[] = JSON.parse(json);
-            return dataArray.map(data => MineWorkerFactory.createByData(data)).filter(worker => worker != null);
+            return dataArray
+                .map(data => MineWorkerFactory.createByData(data))
+                .filter(worker => worker != null);
         } catch (ex) {
             cc.error('Failed to parse mine workers data:', ex);
             return [];
